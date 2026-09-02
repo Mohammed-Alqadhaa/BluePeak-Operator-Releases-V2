@@ -69,8 +69,7 @@ try {
         Step 'Design captures'
         $captures = Join-Path (Join-Path $root 'docs') 'captures'
         New-Item -ItemType Directory -Force -Path $captures | Out-Null
-        $exe = Join-Path $root "src\BluePeak.Appin\$Configuration
-et10.0-windows\BluePeak.Operator.exe"
+        $exe = Join-Path $root "src/BluePeak.App/bin/$Configuration/net10.0-windows/BluePeak.Operator.exe"
         if (-not (Test-Path $exe)) { throw "executable not found at $exe" }
         Start-Process -FilePath $exe -ArgumentList '--capture', $captures, '--capture-exit' -Wait -NoNewWindow
         $written = @(Get-ChildItem -Path $captures -Filter *.png -ErrorAction SilentlyContinue)
