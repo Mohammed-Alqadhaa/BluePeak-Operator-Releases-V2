@@ -29,6 +29,28 @@ public class FullScreenTests
     }
 
     [Fact]
+    public void The_native_caption_is_suppressed_in_every_window_mode()
+    {
+        // The custom caption is drawn by the app. If WindowStyle is ever anything but None, the
+        // operating system draws its own title bar as well — which is exactly what happened when
+        // the chrome was detached for full screen and the app had been relying on WindowChrome
+        // alone to hide it.
+        var styles = With(w =>
+        {
+            var windowed = w.WindowStyle;
+            w.SetFullScreen(true);
+            var full = w.WindowStyle;
+            w.SetFullScreen(false);
+            var restored = w.WindowStyle;
+            return (windowed, full, restored);
+        });
+
+        Assert.Equal(WindowStyle.None, styles.windowed);
+        Assert.Equal(WindowStyle.None, styles.full);
+        Assert.Equal(WindowStyle.None, styles.restored);
+    }
+
+    [Fact]
     public void Entering_full_screen_maximises_without_a_resizable_chrome()
     {
         var (full, state, resize, chrome) = With(w =>

@@ -7,6 +7,7 @@
         Title="BluePeak Operator" Height="900" Width="1560"
         MinHeight="760" MinWidth="1380"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
         Background="{StaticResource B.Base}"
         Foreground="{StaticResource B.TextPrimary}"
         UseLayoutRounding="True" SnapsToDevicePixels="True"

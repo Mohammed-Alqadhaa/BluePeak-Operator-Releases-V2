@@ -298,6 +298,10 @@ public partial class MainWindow : Window
             _chromeBeforeFullScreen = System.Windows.Shell.WindowChrome.GetWindowChrome(this);
 
             System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
+            // The window declares WindowStyle="None", so detaching the chrome cannot bring the
+            // native caption back. Assert it here too: without it the operating system draws its
+            // own title bar across the top of the full-screen scene.
+            WindowStyle = WindowStyle.None;
             // Toggling through Normal forces the maximise to be recalculated without the chrome.
             WindowState = WindowState.Normal;
             ResizeMode = ResizeMode.NoResize;
