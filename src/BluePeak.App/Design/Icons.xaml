@@ -135,6 +135,22 @@
         <LineGeometry StartPoint="4,4" EndPoint="12,12"/>
         <LineGeometry StartPoint="12,4" EndPoint="4,12"/>
     </GeometryGroup>
+    <!-- Four corner brackets opening outward: enter full screen. -->
+    <GeometryGroup x:Key="I.FullScreen">
+        <PathGeometry Figures="M2.2,6 L2.2,2.2 L6,2.2"/>
+        <PathGeometry Figures="M10,2.2 L13.8,2.2 L13.8,6"/>
+        <PathGeometry Figures="M13.8,10 L13.8,13.8 L10,13.8"/>
+        <PathGeometry Figures="M6,13.8 L2.2,13.8 L2.2,10"/>
+    </GeometryGroup>
+
+    <!-- The same brackets turned inward: leave full screen. -->
+    <GeometryGroup x:Key="I.ExitFullScreen">
+        <PathGeometry Figures="M6,2.4 L6,6 L2.4,6"/>
+        <PathGeometry Figures="M10,6 L13.6,6 L13.6,2.4" ></PathGeometry>
+        <PathGeometry Figures="M10,13.6 L10,10 L13.6,10"/>
+        <PathGeometry Figures="M6,10 L2.4,10 L2.4,13.6"/>
+    </GeometryGroup>
+
     <GeometryGroup x:Key="I.Chevron">
         <PathGeometry Figures="M6,4 L10,8 L6,12"/>
     </GeometryGroup>

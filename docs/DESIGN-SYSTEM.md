@@ -105,6 +105,20 @@ selection and detail.
 - Anything that looks interactive is interactive. Every filter filters, every search searches,
   every button does something, and every cross-reference navigates and carries its subject.
 
+## Window modes
+
+Three states, because a console gets used on a desk, on a shared screen and on a wall:
+
+| Mode | Chrome | Covers |
+|---|---|---|
+| Windowed | Custom caption, resize borders, snap | Its own bounds |
+| Maximised | Custom caption, snap | The monitor's work area — taskbar visible |
+| Full screen (`F11`) | Caption reduced to exit and close, no border | The entire monitor, taskbar included |
+
+Full screen hides minimise and restore, because in that mode they would leave the operator
+stranded. The exit control stays in the caption and the status bar carries a persistent
+`F11 to exit`, so the way out is always on screen rather than remembered.
+
 ## Motion
 
 | Duration | Used for |

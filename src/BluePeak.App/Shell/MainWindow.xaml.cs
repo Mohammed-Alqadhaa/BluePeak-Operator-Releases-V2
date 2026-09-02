@@ -148,6 +148,15 @@ public partial class MainWindow : Window
 
     private void OnShortcut(object? sender, KeyEventArgs e)
     {
+        // F11 is the convention operators will already try, and it must work from any workspace
+        // including while the simulator has keyboard focus.
+        if (e.Key == Key.F11)
+        {
+            SetFullScreen(!IsFullScreen);
+            e.Handled = true;
+            return;
+        }
+
         if (e.KeyboardDevice.Modifiers != ModifierKeys.Control) return;
         string? id = e.Key switch
         {
@@ -172,16 +181,151 @@ public partial class MainWindow : Window
     {
         if (e.ClickCount == 2)
         {
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            // Double-click is the other conventional way out of full screen.
+            if (IsFullScreen) SetFullScreen(false);
+            else WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
             return;
         }
-        if (e.ButtonState == MouseButtonState.Pressed) DragMove();
+        // Dragging a full-screen window has no meaning and DragMove throws on some transitions.
+        if (!IsFullScreen && e.ButtonState == MouseButtonState.Pressed) DragMove();
     }
 
     private void Minimise_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
-    private void Maximise_Click(object sender, RoutedEventArgs e) =>
+    private void Maximise_Click(object sender, RoutedEventArgs e)
+    {
+        if (IsFullScreen) { SetFullScreen(false); return; }
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    }
 
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
+
+    // ------------------------------------------------------------------ full screen
+
+    private const int WmGetMinMaxInfo = 0x0024;
+    private const uint MonitorDefaultToNearest = 0x00000002;
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct NativeRect { public int Left, Top, Right, Bottom; }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct NativePoint { public int X, Y; }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MinMaxInfo
+    {
+        public NativePoint Reserved, MaxSize, MaxPosition, MinTrackSize, MaxTrackSize;
+    }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        if (PresentationSource.FromVisual(this) is HwndSource source) source.AddHook(WindowProc);
+    }
+
+    /// <summary>
+    /// While full screen there is no WindowChrome to constrain the maximised size, and a
+    /// borderless maximised window otherwise overhangs the monitor by the resize border on
+    /// every side — which would push the caption buttons off the right edge. Reporting the
+    /// monitor's own bounds here makes the window exactly the size of the display.
+    /// </summary>
+    private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg != WmGetMinMaxInfo || !IsFullScreen) return IntPtr.Zero;
+
+        var monitor = MonitorFromWindow(hwnd, MonitorDefaultToNearest);
+        if (monitor == IntPtr.Zero) return IntPtr.Zero;
+
+        var info = new MonitorInfo { Size = System.Runtime.InteropServices.Marshal.SizeOf<MonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info)) return IntPtr.Zero;
+
+        var minMax = System.Runtime.InteropServices.Marshal.PtrToStructure<MinMaxInfo>(lParam);
+        // Deliberately the full monitor rectangle, not the work area: covering the taskbar is
+        // the point of the mode.
+        minMax.MaxPosition = new NativePoint { X = 0, Y = 0 };
+        minMax.MaxSize = new NativePoint
+        {
+            X = info.Monitor.Right - info.Monitor.Left,
+            Y = info.Monitor.Bottom - info.Monitor.Top
+        };
+        minMax.MaxTrackSize = minMax.MaxSize;
+        System.Runtime.InteropServices.Marshal.StructureToPtr(minMax, lParam, false);
+
+        handled = true;
+        return IntPtr.Zero;
+    }
+
+    public bool IsFullScreen { get; private set; }
+
+    private WindowState _stateBeforeFullScreen = WindowState.Normal;
+    private System.Windows.Shell.WindowChrome? _chromeBeforeFullScreen;
+
+    private void FullScreen_Click(object sender, RoutedEventArgs e) => SetFullScreen(!IsFullScreen);
+
+    /// <summary>
+    /// True full screen: the window covers the whole monitor including the taskbar.
+    ///
+    /// The WindowChrome that gives the app its custom caption also handles WM_GETMINMAXINFO,
+    /// which constrains a maximised window to the monitor's *work area* — so simply maximising
+    /// leaves the taskbar strip visible. Detaching the chrome for the duration restores WPF's
+    /// plain WindowStyle=None behaviour, which does cover the full monitor, and it is put back
+    /// on exit so resize borders and snap behave normally again.
+    /// </summary>
+    public void SetFullScreen(bool enable)
+    {
+        if (enable == IsFullScreen) return;
+
+        IsFullScreen = enable;
+
+        if (enable)
+        {
+            _stateBeforeFullScreen = WindowState == WindowState.Minimized ? WindowState.Normal : WindowState;
+            _chromeBeforeFullScreen = System.Windows.Shell.WindowChrome.GetWindowChrome(this);
+
+            System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
+            // Toggling through Normal forces the maximise to be recalculated without the chrome.
+            WindowState = WindowState.Normal;
+            ResizeMode = ResizeMode.NoResize;
+            WindowState = WindowState.Maximized;
+        }
+        else
+        {
+            WindowState = WindowState.Normal;
+            ResizeMode = ResizeMode.CanResize;
+            System.Windows.Shell.WindowChrome.SetWindowChrome(this, _chromeBeforeFullScreen);
+            WindowState = _stateBeforeFullScreen;
+        }
+
+        UpdateFullScreenAffordances();
+    }
+
+    private void UpdateFullScreenAffordances()
+    {
+        FullScreenGlyph.Data = (Geometry)FindResource(IsFullScreen ? "I.ExitFullScreen" : "I.FullScreen");
+        FullScreenButton.ToolTip = IsFullScreen ? "Leave full screen (F11)" : "Full screen (F11)";
+
+        // The window border reads as a seam against a bezel, so drop it while full screen.
+        WindowFrame.BorderThickness = new Thickness(IsFullScreen ? 0 : 1);
+
+        // Minimise and restore are meaningless in this mode and would leave the operator stranded.
+        MinimiseButton.Visibility = IsFullScreen ? Visibility.Collapsed : Visibility.Visible;
+        MaximiseButton.Visibility = IsFullScreen ? Visibility.Collapsed : Visibility.Visible;
+
+        StatusFullScreen.Visibility = IsFullScreen ? Visibility.Visible : Visibility.Collapsed;
+    }
 }

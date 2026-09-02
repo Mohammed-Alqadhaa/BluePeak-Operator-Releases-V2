@@ -275,6 +275,11 @@ setup, and nothing written outside the folder you run it from.
 
 Minimum window size is 1380 × 760.
 
+**Full screen** — press `F11`, or use the button left of the window controls. Full screen covers
+the whole monitor including the taskbar, which matters on a wall display or a NOC screen where the
+taskbar is wasted vertical space. The exit control stays in the caption bar and the status bar
+carries a persistent `F11 to exit` reminder, so there is always a visible way back.
+
 ### From source
 
 ```bash
@@ -301,9 +306,10 @@ warnings-as-errors and run through both test suites from clean. It also writes `
 
 ### Keyboard
 
-| Key | Goes to |
+| Key | Does |
 |---|---|
 | `Ctrl+1` … `Ctrl+9`, `Ctrl+0` | Overview, NOC, SOC, Service Desk, Tickets, Incidents, Diagnostics, Infrastructure, Simulator, Automation |
+| `F11` | Toggle full screen |
 
 In the simulator: `Space` play/pause · `,` `.` previous/next stage · `R` replay · `Esc` back ·
 `←` `→` scrub (with `Shift` for five seconds). The timeline is draggable anywhere along its length.

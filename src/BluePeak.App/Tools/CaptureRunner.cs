@@ -46,6 +46,14 @@ public static class CaptureRunner
             }
         }
 
+        // --fullscreen captures the real full-screen window so the mode can be reviewed as
+        // pixels rather than only asserted.
+        if (args.Contains("--fullscreen") && window is MainWindow shell)
+        {
+            shell.SetFullScreen(true);
+            await Settle(window, 500);
+        }
+
         await Settle(window, 900);
 
         foreach (var workspace in WorkspaceCatalog.All)

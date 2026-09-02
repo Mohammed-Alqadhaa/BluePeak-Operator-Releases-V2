@@ -35,10 +35,8 @@ public class WorkspaceTests
             _host.Run(() =>
             {
                 var view = definition.View;
-                var host = new Border { Child = null };
-                // Detach from any previous parent before measuring.
-                if (view.Parent is Border previous) previous.Child = null;
-                host.Child = view;
+                Detach(view);
+                var host = new Border { Child = view };
                 host.Measure(new Size(1342, 838));
                 host.Arrange(new Rect(0, 0, 1342, 838));
                 host.UpdateLayout();
@@ -68,7 +66,7 @@ public class WorkspaceTests
             _host.Run(() =>
             {
                 var view = definition.View;
-                if (view.Parent is Border previous) previous.Child = null;
+                Detach(view);
                 var host = new Border { Child = view };
                 host.Measure(new Size(width, height));
                 host.Arrange(new Rect(0, 0, width, height));
@@ -96,7 +94,7 @@ public class WorkspaceTests
             _host.Run(() =>
             {
                 var view = definition.View;
-                if (view.Parent is Border previous) previous.Child = null;
+                Detach(view);
                 var host = new Border { Child = view };
                 host.Measure(new Size(GuaranteedWidth, GuaranteedHeight));
                 host.Arrange(new Rect(0, 0, GuaranteedWidth, GuaranteedHeight));
@@ -113,6 +111,22 @@ public class WorkspaceTests
 
                 host.Child = null;
             });
+        }
+    }
+
+    /// <summary>
+    /// Workspace views are shared singletons, so a view may currently be parented by the shell's
+    /// content host, a previous test's Border, or nothing at all. Detach from whichever it is
+    /// before re-parenting, or WPF throws for having two logical parents.
+    /// </summary>
+    private static void Detach(FrameworkElement view)
+    {
+        switch (view.Parent)
+        {
+            case ContentControl content: content.Content = null; break;
+            case Border border: border.Child = null; break;
+            case Decorator decorator: decorator.Child = null; break;
+            case Panel panel: panel.Children.Remove(view); break;
         }
     }
 

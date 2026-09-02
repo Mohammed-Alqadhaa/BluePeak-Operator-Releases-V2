@@ -10,7 +10,7 @@ Test result files are written to `artifacts/engine-tests.trx` and `artifacts/ui-
 
 ## Coverage
 
-**124 tests. 96 engine, 28 user interface. All passing.**
+**130 tests. 96 engine, 34 user interface. All passing.**
 
 ### Simulation engine — `tests/BluePeak.Tests/TimelineTests.cs`
 
@@ -101,6 +101,11 @@ dictionaries merged, so views are exercised exactly as they are at runtime.
 | Changing scenario mid-journey resets cleanly | |
 | A scrub across the whole timeline (including out of bounds) never throws | |
 | The simulator survives being driven through every journey twice with lifecycle cycles interleaved | |
+| Full screen maximises with the WindowChrome detached | The chrome constrains a maximised window to the work area, so the taskbar would stay visible |
+| Leaving full screen restores the chrome, the resize mode and the previous window state | The operator must never be stranded in a window they cannot resize or restore |
+| A maximised window returns to maximised, not restored | |
+| Eight toggle cycles end in a usable windowed state | |
+| Setting the same full-screen value twice is a no-op | Guards against stashing the detached chrome as the value to restore |
 
 ## Build verification
 
