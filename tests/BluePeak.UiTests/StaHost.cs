@@ -30,7 +30,7 @@ public sealed class StaHost : IDisposable
             {
                 application.Resources.MergedDictionaries.Add(new ResourceDictionary
                 {
-                    Source = new Uri($"pack://application:,,,/BluePeakOperator;component/{source}", UriKind.Absolute)
+                    Source = new Uri($"pack://application:,,,/BluePeak.Operator;component/{source}", UriKind.Absolute)
                 });
             }
 
