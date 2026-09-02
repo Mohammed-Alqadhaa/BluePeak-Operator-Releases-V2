@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BluePeak.App/BluePeak.App.csproj" />
+    <Project Path="src/BluePeak.Domain/BluePeak.Domain.csproj" />
+    <Project Path="src/BluePeak.Simulation/BluePeak.Simulation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BluePeak.Tests/BluePeak.Tests.csproj" />
+    <Project Path="tests/BluePeak.UiTests/BluePeak.UiTests.csproj" />
+  </Folder>
+</Solution>

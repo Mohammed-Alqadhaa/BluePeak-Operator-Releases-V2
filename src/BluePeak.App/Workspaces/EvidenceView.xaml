@@ -1,0 +1,226 @@
+<UserControl x:Class="BluePeak.App.Workspaces.EvidenceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:BluePeak.App.Controls"
+             Background="{StaticResource B.Base}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource Workspace.CommandBar}">
+            <Grid Margin="18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Evidence" Style="{StaticResource Text.Title}"/>
+                <StackPanel Grid.Column="1" x:Name="FilterGroup" Orientation="Horizontal" Margin="20,0,0,0"
+                            VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" x:Name="Summary" Style="{StaticResource Text.Tertiary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- The authority boundary is stated on the surface, not buried in settings. -->
+        <Border Grid.Row="1" Background="#141C16" BorderBrush="{StaticResource B.Hairline}" BorderThickness="0,0,0,1"
+                Padding="18,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle Grid.Column="0" Width="2" HorizontalAlignment="Left" Fill="{StaticResource B.Degraded}"/>
+                <TextBlock Grid.Column="1" Margin="12,0,0,0" Style="{StaticResource Text.Prose}"
+                           FontSize="{StaticResource T.Caption}"
+                           Foreground="{StaticResource B.TextSecondary}"
+                           Text="A record produced by this workstation carries local operator authority only. It becomes project-authoritative when a platform control plane countersigns it, and never by being copied into a report. Authority is shown on every record below and is not editable here."/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="500"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="418" MinWidth="330"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Style="{StaticResource Column.Header}">
+                    <Grid Margin="18,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="128"/>
+                            <ColumnDefinition Width="88"/>
+                            <ColumnDefinition Width="72"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Record" Style="{StaticResource ColumnHeader}"/>
+                        <TextBlock Grid.Column="1" Text="Claim" Style="{StaticResource ColumnHeader}"/>
+                        <TextBlock Grid.Column="2" Text="Authority" Style="{StaticResource ColumnHeader}"/>
+                        <TextBlock Grid.Column="3" Text="Result" Style="{StaticResource ColumnHeader}"/>
+                        <TextBlock Grid.Column="4" Text="Captured" Style="{StaticResource ColumnHeader}"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+                </Border>
+
+                <ListBox Grid.Row="1" x:Name="RecordList" Style="{StaticResource List}"
+                         SelectionChanged="Record_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="50" Margin="18,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="128"/>
+                                    <ColumnDefinition Width="88"/>
+                                    <ColumnDefinition Width="72"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Id}" Style="{StaticResource Cell.Id}"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,14,0">
+                                    <TextBlock Text="{Binding Claim}" Style="{StaticResource Cell.Primary}"
+                                               FontSize="{StaticResource T.Caption}"/>
+                                    <TextBlock Text="{Binding Source}" Style="{StaticResource Text.Tertiary}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,10,0"
+                                            Orientation="Horizontal">
+                                    <Border Width="7" Height="7" CornerRadius="3.5" VerticalAlignment="Center"
+                                            Margin="0,0,8,0"
+                                            Background="{Binding Authority, Converter={StaticResource AuthorityBrush}}"/>
+                                    <TextBlock Text="{Binding Authority, Converter={StaticResource EnumLabel}}"
+                                               Style="{StaticResource Cell.Secondary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="3" Text="{Binding Result}" VerticalAlignment="Center"
+                                           Style="{StaticResource Text.Mono}" FontSize="{StaticResource T.Caption}"
+                                           Foreground="{Binding Result, Converter={StaticResource ResultBrush}}"/>
+                                <TextBlock Grid.Column="4" Text="{Binding CapturedAt, Converter={StaticResource Ago}}"
+                                           VerticalAlignment="Center" HorizontalAlignment="Right"
+                                           Style="{StaticResource Text.Mono}" FontSize="{StaticResource T.Caption}"
+                                           Foreground="{StaticResource B.TextSecondary}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+            <Border Grid.Column="2" Style="{StaticResource Inspector}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="{StaticResource B.Overlay}" BorderBrush="{StaticResource B.Hairline}"
+                            BorderThickness="0,0,0,1" Padding="16,13">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,7">
+                                <TextBlock x:Name="DetailId" Style="{StaticResource Text.Mono}"
+                                           Foreground="{StaticResource B.TextSecondary}"/>
+                                <Border x:Name="ResultChip" Style="{StaticResource Chip}" Margin="10,0,0,0">
+                                    <TextBlock x:Name="ResultText" Style="{StaticResource Chip.Text}"/>
+                                </Border>
+                                <Border x:Name="AuthorityChip" Style="{StaticResource Chip}" Margin="8,0,0,0">
+                                    <TextBlock x:Name="AuthorityText" Style="{StaticResource Chip.Text}"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock x:Name="DetailClaim" Style="{StaticResource Text.Subtitle}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="16,14,10,18">
+                        <StackPanel>
+                            <!-- The evidence model, stated as fields rather than prose -->
+                            <ItemsControl x:Name="ModelList" Margin="0,0,0,18">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,11">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="94"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                       Style="{StaticResource Field.Label}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                       Style="{StaticResource Field.Value}"
+                                                       FontSize="{StaticResource T.Caption}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Expected against observed" Style="{StaticResource Text.Section}"
+                                       Margin="0,0,0,9"/>
+                            <Grid Margin="0,0,0,18">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Row="0" Grid.Column="0" Width="2" HorizontalAlignment="Left"
+                                           Fill="{StaticResource B.Healthy}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="11,0,0,10">
+                                    <TextBlock Text="Expected" Style="{StaticResource Field.Label}"/>
+                                    <TextBlock x:Name="ExpectedText" Style="{StaticResource Field.Value}"
+                                               Margin="0,3,0,0" FontSize="{StaticResource T.Caption}"/>
+                                </StackPanel>
+                                <Rectangle Grid.Row="1" Grid.Column="0" x:Name="ObservedBar" Width="2"
+                                           HorizontalAlignment="Left"/>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="11,0,0,0">
+                                    <TextBlock Text="Observed" Style="{StaticResource Field.Label}"/>
+                                    <TextBlock x:Name="ObservedText" Style="{StaticResource Field.Value}"
+                                               Margin="0,3,0,0" FontSize="{StaticResource T.Caption}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Preservation" Style="{StaticResource Text.Section}" Margin="0,0,0,9"/>
+                            <Border Background="{StaticResource B.Base}" BorderBrush="{StaticResource B.Hairline}"
+                                    BorderThickness="1" CornerRadius="2" Padding="12,10" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <TextBlock Text="Digest" Style="{StaticResource Field.Label}"/>
+                                        <TextBlock x:Name="DigestText" HorizontalAlignment="Right"
+                                                   Style="{StaticResource Text.Mono}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                    </Grid>
+                                    <Grid Margin="0,7,0,0">
+                                        <TextBlock Text="Sealed" Style="{StaticResource Field.Label}"/>
+                                        <TextBlock x:Name="SealedText" HorizontalAlignment="Right"
+                                                   Style="{StaticResource Text.Mono}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                    </Grid>
+                                    <Grid Margin="0,7,0,0">
+                                        <TextBlock Text="Scope" Style="{StaticResource Field.Label}"/>
+                                        <TextBlock x:Name="ScopeText" HorizontalAlignment="Right"
+                                                   Style="{StaticResource Text.Mono}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock x:Name="AuthorityNote" Style="{StaticResource Text.Prose}"
+                                       FontSize="{StaticResource T.Caption}" Margin="0,0,0,18"/>
+
+                            <TextBlock Text="Referenced by" Style="{StaticResource Text.Section}" Margin="0,0,0,8"/>
+                            <StackPanel x:Name="ReferencePanel"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

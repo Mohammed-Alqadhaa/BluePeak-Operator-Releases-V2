@@ -1,0 +1,121 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- ============================================================================
+         BluePeak Operator · design tokens
+         Colour carries state. Structure carries hierarchy. Nothing is decorative.
+         ============================================================================ -->
+
+    <!-- Surfaces: five steps of value, no shadows, no gradients as decoration. -->
+    <Color x:Key="C.Rail">#FF090C11</Color>
+    <Color x:Key="C.Base">#FF0E1218</Color>
+    <Color x:Key="C.Canvas">#FF12171F</Color>
+    <Color x:Key="C.Raised">#FF171D26</Color>
+    <Color x:Key="C.Overlay">#FF1C232E</Color>
+    <Color x:Key="C.Header">#FF0F141B</Color>
+
+    <Color x:Key="C.RowHover">#FF1A212B</Color>
+    <Color x:Key="C.RowSelected">#FF16283F</Color>
+    <Color x:Key="C.RowAlt">#FF141A22</Color>
+
+    <Color x:Key="C.Hairline">#FF222933</Color>
+    <Color x:Key="C.HairlineSoft">#FF1B222B</Color>
+    <Color x:Key="C.Edge">#FF2D3742</Color>
+
+    <Color x:Key="C.TextPrimary">#FFE7ECF3</Color>
+    <Color x:Key="C.TextSecondary">#FF97A2B2</Color>
+    <Color x:Key="C.TextTertiary">#FF697487</Color>
+    <Color x:Key="C.TextInverse">#FF0B0F14</Color>
+
+    <Color x:Key="C.Accent">#FF4C9DF0</Color>
+    <Color x:Key="C.AccentDim">#FF2C5D95</Color>
+    <Color x:Key="C.AccentWash">#2A4C9DF0</Color>
+
+    <!-- State. These five are the only saturated colours in the product. -->
+    <Color x:Key="C.Healthy">#FF3FB98A</Color>
+    <Color x:Key="C.Degraded">#FFE0A33E</Color>
+    <Color x:Key="C.Critical">#FFE5544B</Color>
+    <Color x:Key="C.Maintenance">#FF8A7BD1</Color>
+    <Color x:Key="C.Unknown">#FF6B7686</Color>
+
+    <Color x:Key="C.HealthyWash">#333FB98A</Color>
+    <Color x:Key="C.DegradedWash">#33E0A33E</Color>
+    <Color x:Key="C.CriticalWash">#33E5544B</Color>
+
+    <SolidColorBrush x:Key="B.Rail" Color="{StaticResource C.Rail}"/>
+    <SolidColorBrush x:Key="B.Base" Color="{StaticResource C.Base}"/>
+    <SolidColorBrush x:Key="B.Canvas" Color="{StaticResource C.Canvas}"/>
+    <SolidColorBrush x:Key="B.Raised" Color="{StaticResource C.Raised}"/>
+    <SolidColorBrush x:Key="B.Overlay" Color="{StaticResource C.Overlay}"/>
+    <SolidColorBrush x:Key="B.Header" Color="{StaticResource C.Header}"/>
+
+    <SolidColorBrush x:Key="B.RowHover" Color="{StaticResource C.RowHover}"/>
+    <SolidColorBrush x:Key="B.RowSelected" Color="{StaticResource C.RowSelected}"/>
+    <SolidColorBrush x:Key="B.RowAlt" Color="{StaticResource C.RowAlt}"/>
+
+    <SolidColorBrush x:Key="B.Hairline" Color="{StaticResource C.Hairline}"/>
+    <SolidColorBrush x:Key="B.HairlineSoft" Color="{StaticResource C.HairlineSoft}"/>
+    <SolidColorBrush x:Key="B.Edge" Color="{StaticResource C.Edge}"/>
+
+    <SolidColorBrush x:Key="B.TextPrimary" Color="{StaticResource C.TextPrimary}"/>
+    <SolidColorBrush x:Key="B.TextSecondary" Color="{StaticResource C.TextSecondary}"/>
+    <SolidColorBrush x:Key="B.TextTertiary" Color="{StaticResource C.TextTertiary}"/>
+    <SolidColorBrush x:Key="B.TextInverse" Color="{StaticResource C.TextInverse}"/>
+
+    <SolidColorBrush x:Key="B.Accent" Color="{StaticResource C.Accent}"/>
+    <SolidColorBrush x:Key="B.AccentDim" Color="{StaticResource C.AccentDim}"/>
+    <SolidColorBrush x:Key="B.AccentWash" Color="{StaticResource C.AccentWash}"/>
+
+    <SolidColorBrush x:Key="B.Healthy" Color="{StaticResource C.Healthy}"/>
+    <SolidColorBrush x:Key="B.Degraded" Color="{StaticResource C.Degraded}"/>
+    <SolidColorBrush x:Key="B.Critical" Color="{StaticResource C.Critical}"/>
+    <SolidColorBrush x:Key="B.Maintenance" Color="{StaticResource C.Maintenance}"/>
+    <SolidColorBrush x:Key="B.Unknown" Color="{StaticResource C.Unknown}"/>
+
+    <SolidColorBrush x:Key="B.HealthyWash" Color="{StaticResource C.HealthyWash}"/>
+    <SolidColorBrush x:Key="B.DegradedWash" Color="{StaticResource C.DegradedWash}"/>
+    <SolidColorBrush x:Key="B.CriticalWash" Color="{StaticResource C.CriticalWash}"/>
+
+    <!-- Typography. Humanist sans for prose, monospace for anything that must align. -->
+    <FontFamily x:Key="F.UI">Segoe UI Variable Text, Segoe UI, Selawik, sans-serif</FontFamily>
+    <FontFamily x:Key="F.Display">Segoe UI Variable Display, Segoe UI Semibold, Segoe UI, sans-serif</FontFamily>
+    <FontFamily x:Key="F.Mono">Cascadia Mono, Consolas, Courier New, monospace</FontFamily>
+
+    <sys:Double x:Key="T.Display">21</sys:Double>
+    <sys:Double x:Key="T.Title">15</sys:Double>
+    <sys:Double x:Key="T.Subtitle">13.5</sys:Double>
+    <sys:Double x:Key="T.Body">12.5</sys:Double>
+    <sys:Double x:Key="T.Data">12</sys:Double>
+    <sys:Double x:Key="T.Caption">11</sys:Double>
+    <sys:Double x:Key="T.Micro">10</sys:Double>
+
+    <!-- Density. One vertical rhythm across the whole product. -->
+    <sys:Double x:Key="D.RowHeight">28</sys:Double>
+    <sys:Double x:Key="D.RowHeightRelaxed">34</sys:Double>
+    <sys:Double x:Key="D.HeaderHeight">27</sys:Double>
+    <sys:Double x:Key="D.TitleBarHeight">38</sys:Double>
+    <sys:Double x:Key="D.StatusBarHeight">24</sys:Double>
+    <sys:Double x:Key="D.CommandBarHeight">40</sys:Double>
+    <sys:Double x:Key="D.RailWidth">218</sys:Double>
+    <sys:Double x:Key="D.RailWidthCollapsed">52</sys:Double>
+
+    <!-- Grid-length twins of the density tokens, for RowDefinition and ColumnDefinition. -->
+    <GridLength x:Key="G.TitleBarHeight">38</GridLength>
+    <GridLength x:Key="G.StatusBarHeight">24</GridLength>
+    <GridLength x:Key="G.CommandBarHeight">40</GridLength>
+    <GridLength x:Key="G.RailWidth">218</GridLength>
+
+    <Thickness x:Key="P.Workspace">18,14,18,14</Thickness>
+    <Thickness x:Key="P.Cell">10,0,10,0</Thickness>
+    <Thickness x:Key="P.Panel">14,12,14,12</Thickness>
+
+    <!-- Motion. Mechanical settle, never bounce. -->
+    <Duration x:Key="M.Fast">0:0:0.12</Duration>
+    <Duration x:Key="M.Normal">0:0:0.22</Duration>
+    <Duration x:Key="M.Slow">0:0:0.36</Duration>
+    <CubicEase x:Key="E.Out" EasingMode="EaseOut"/>
+    <CubicEase x:Key="E.InOut" EasingMode="EaseInOut"/>
+    <QuarticEase x:Key="E.Seat" EasingMode="EaseOut"/>
+
+</ResourceDictionary>

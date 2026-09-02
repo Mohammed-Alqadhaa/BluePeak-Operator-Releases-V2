@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>BluePeak.App</RootNamespace>
+    <AssemblyName>BluePeakOperator</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BluePeak.Domain\BluePeak.Domain.csproj" />
+    <ProjectReference Include="..\BluePeak.Simulation\BluePeak.Simulation.csproj" />
+  </ItemGroup>
+</Project>

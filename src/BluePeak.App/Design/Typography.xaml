@@ -1,0 +1,72 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="Text.Base" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource F.UI}"/>
+        <Setter Property="FontSize" Value="{StaticResource T.Body}"/>
+        <Setter Property="Foreground" Value="{StaticResource B.TextPrimary}"/>
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="Text.Display" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource F.Display}"/>
+        <Setter Property="FontSize" Value="{StaticResource T.Display}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="Text.Title" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource F.Display}"/>
+        <Setter Property="FontSize" Value="{StaticResource T.Title}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="Text.Subtitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="{StaticResource T.Subtitle}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+    <Style x:Key="Text.Body" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}"/>
+
+    <Style x:Key="Text.Secondary" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="Foreground" Value="{StaticResource B.TextSecondary}"/>
+    </Style>
+
+    <Style x:Key="Text.Tertiary" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="Foreground" Value="{StaticResource B.TextTertiary}"/>
+        <Setter Property="FontSize" Value="{StaticResource T.Caption}"/>
+    </Style>
+
+    <!-- Section labels: the primary structural device instead of card headers. -->
+    <Style x:Key="Text.Section" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="{StaticResource T.Micro}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource B.TextTertiary}"/>
+        <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+    </Style>
+
+    <Style x:Key="Text.Mono" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource F.Mono}"/>
+        <Setter Property="FontSize" Value="{StaticResource T.Data}"/>
+    </Style>
+
+    <Style x:Key="Text.MonoDim" TargetType="TextBlock" BasedOn="{StaticResource Text.Mono}">
+        <Setter Property="Foreground" Value="{StaticResource B.TextSecondary}"/>
+    </Style>
+
+    <Style x:Key="Text.Numeric" TargetType="TextBlock" BasedOn="{StaticResource Text.Mono}">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="Text.Prose" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="LineHeight" Value="18"/>
+        <Setter Property="Foreground" Value="{StaticResource B.TextSecondary}"/>
+    </Style>
+
+    <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Base}"/>
+
+</ResourceDictionary>

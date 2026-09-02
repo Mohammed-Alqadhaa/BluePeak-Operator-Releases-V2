@@ -1,0 +1,313 @@
+<Window x:Class="BluePeak.App.Shell.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:BluePeak.App.Shell"
+        xmlns:ctl="clr-namespace:BluePeak.App.Controls"
+        xmlns:sw="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="BluePeak Operator" Height="900" Width="1560"
+        MinHeight="760" MinWidth="1380"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource B.Base}"
+        Foreground="{StaticResource B.TextPrimary}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Ideal">
+
+    <sw:WindowChrome.WindowChrome>
+        <sw:WindowChrome CaptionHeight="0" CornerRadius="0" GlassFrameThickness="0"
+                         ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
+    </sw:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <!-- Navigation rail item. Selection is a left marker plus a value shift, never a pill. -->
+        <Style x:Key="NavItem" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Foreground" Value="{StaticResource B.TextSecondary}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="Transparent">
+                            <Grid>
+                                <Rectangle x:Name="Marker" Width="2" HorizontalAlignment="Left" Fill="Transparent"/>
+                                <ContentPresenter/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FF141A22"/>
+                                <Setter Property="Foreground" Value="{StaticResource B.TextPrimary}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FF16202C"/>
+                                <Setter TargetName="Marker" Property="Fill" Value="{StaticResource B.Accent}"/>
+                                <Setter Property="Foreground" Value="{StaticResource B.TextPrimary}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FF16202C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CaptionButton" TargetType="Button">
+            <Setter Property="Width" Value="44"/>
+            <Setter Property="Height" Value="{StaticResource D.TitleBarHeight}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource B.TextSecondary}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#FF1D242E"/>
+                                <Setter Property="Foreground" Value="{StaticResource B.TextPrimary}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFB4342C"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="{StaticResource B.Edge}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{StaticResource G.TitleBarHeight}"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="{StaticResource G.StatusBarHeight}"/>
+            </Grid.RowDefinitions>
+
+            <!-- ================= Title bar ================= -->
+            <Border Grid.Row="0" Background="{StaticResource B.Rail}" BorderBrush="{StaticResource B.Hairline}"
+                    BorderThickness="0,0,0,1" MouseLeftButtonDown="TitleBar_MouseDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Mark -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="14,0,0,0" VerticalAlignment="Center">
+                        <Path Width="15" Height="15" Stretch="Uniform" Margin="0,0,9,0"
+                              Data="M2,13.4 L8,2.2 L14,13.4 M5.1,8.6 L8,3.2 L10.9,8.6"
+                              Stroke="{StaticResource B.Accent}" StrokeThickness="1.4"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                        <TextBlock Text="BLUEPEAK" FontFamily="{StaticResource F.Display}" FontSize="12.5"
+                                   FontWeight="SemiBold" Foreground="{StaticResource B.TextPrimary}"/>
+                        <TextBlock Text="OPERATOR" FontFamily="{StaticResource F.Display}" FontSize="12.5"
+                                   FontWeight="Normal" Margin="6,0,0,0"
+                                   Foreground="{StaticResource B.TextTertiary}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1" Text="Observe · Diagnose · Act · Verify" Margin="18,0,0,0"
+                               VerticalAlignment="Center" FontSize="{StaticResource T.Caption}"
+                               Foreground="{StaticResource B.TextTertiary}"/>
+
+                    <!-- Focus carrier: the subject the operator is reasoning about, always visible. -->
+                    <Border Grid.Column="2" x:Name="FocusChip" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Background="{StaticResource B.Canvas}" BorderBrush="{StaticResource B.Edge}"
+                            BorderThickness="1" CornerRadius="2" Padding="0" Visibility="Collapsed"
+                            MouseLeftButtonDown="FocusChip_Click" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal" Height="24">
+                            <Border Background="{StaticResource B.AccentWash}" Padding="8,0" VerticalAlignment="Stretch">
+                                <TextBlock x:Name="FocusKindText" Text="FOCUS" VerticalAlignment="Center"
+                                           FontSize="{StaticResource T.Micro}" FontWeight="SemiBold" Foreground="{StaticResource B.Accent}"/>
+                            </Border>
+                            <TextBlock x:Name="FocusIdText" Margin="9,0,0,0" VerticalAlignment="Center"
+                                       FontFamily="{StaticResource F.Mono}" FontSize="{StaticResource T.Data}"
+                                       Foreground="{StaticResource B.TextPrimary}"/>
+                            <TextBlock x:Name="FocusLabelText" Margin="8,0,10,0" VerticalAlignment="Center"
+                                       FontSize="{StaticResource T.Caption}" MaxWidth="360"
+                                       TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource B.TextSecondary}"/>
+                            <Button Style="{StaticResource CaptionButton}" Width="24" Height="24"
+                                    Click="ClearFocus_Click" ToolTip="Clear focus">
+                                <Path Data="{StaticResource I.Close}" Stroke="{StaticResource B.TextTertiary}"
+                                      StrokeThickness="1.2" Width="10" Height="10" Stretch="Uniform"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Session state -->
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Border Background="#22E0A33E" BorderBrush="#55E0A33E" BorderThickness="1" CornerRadius="2"
+                                Padding="7,2" Margin="0,0,10,0"
+                                ToolTip="This build observes and simulates. It holds no credentials and performs no production mutation.">
+                            <TextBlock Text="SIMULATION ESTATE" FontSize="{StaticResource T.Micro}" FontWeight="SemiBold" Foreground="{StaticResource B.Degraded}"/>
+                        </Border>
+                        <TextBlock x:Name="ClockText" FontFamily="{StaticResource F.Mono}"
+                                   FontSize="{StaticResource T.Data}" Foreground="{StaticResource B.TextSecondary}"
+                                   VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal">
+                        <Button Style="{StaticResource CaptionButton}" Click="Minimise_Click" ToolTip="Minimise">
+                            <Rectangle Width="10" Height="1" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                        </Button>
+                        <Button Style="{StaticResource CaptionButton}" Click="Maximise_Click" ToolTip="Maximise">
+                            <Rectangle Width="9" Height="9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                       StrokeThickness="1" Fill="Transparent"/>
+                        </Button>
+                        <Button Style="{StaticResource CloseButton}" Click="Close_Click" ToolTip="Close">
+                            <Path Data="{StaticResource I.Close}" Stretch="Uniform" Width="10" Height="10"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1.2"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ================= Body ================= -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Navigation rail -->
+                <Border Grid.Column="0" x:Name="RailBorder" Width="{StaticResource D.RailWidth}"
+                        Background="{StaticResource B.Rail}" BorderBrush="{StaticResource B.Hairline}"
+                        BorderThickness="0,0,1,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="0,6,0,6">
+                            <ItemsControl x:Name="NavGroups">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding Key}" Style="{StaticResource Text.Section}"
+                                                       Margin="16,4,0,4" x:Name="GroupLabel"/>
+                                            <ListBox ItemsSource="{Binding}" Style="{StaticResource List.Plain}"
+                                                     Background="Transparent" BorderThickness="0"
+                                                     SelectionChanged="Nav_SelectionChanged"
+                                                     ItemContainerStyle="{StaticResource NavItem}"
+                                                     Tag="navgroup">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Margin="14,0,10,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="26"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Path Grid.Column="0" Width="15" Height="15" Stretch="Uniform"
+                                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                                  Data="{Binding Icon, Converter={StaticResource IconLookup}}"
+                                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                                                  StrokeThickness="1.15" Fill="Transparent"
+                                                                  StrokeLineJoin="Round"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Title}"
+                                                                       VerticalAlignment="Center" FontSize="{StaticResource T.Body}"
+                                                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"/>
+                                                            <TextBlock Grid.Column="2" Text="{Binding Shortcut}"
+                                                                       VerticalAlignment="Center" FontSize="{StaticResource T.Micro}"
+                                                                       FontFamily="{StaticResource F.Mono}"
+                                                                       Foreground="{StaticResource B.TextTertiary}" Opacity="0.7"/>
+                                                            <Grid.ToolTip>
+                                                                <StackPanel MaxWidth="260">
+                                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                                                    <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap"
+                                                                               Foreground="{StaticResource B.TextSecondary}" Margin="0,3,0,0"/>
+                                                                </StackPanel>
+                                                            </Grid.ToolTip>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <!-- Estate posture summary, permanently in the rail -->
+                        <Border Grid.Row="1" BorderBrush="{StaticResource B.Hairline}" BorderThickness="0,1,0,0"
+                                Padding="16,10,14,12">
+                            <StackPanel>
+                                <TextBlock Text="Estate posture" Style="{StaticResource Text.Section}" Margin="0,0,0,7"/>
+                                <Grid Margin="0,0,0,7">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" x:Name="PostureVerdict" Text="Degraded"
+                                               FontFamily="{StaticResource F.Display}" FontSize="14" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" x:Name="PostureCount" Style="{StaticResource Text.Tertiary}"/>
+                                </Grid>
+                                <ctl:DistributionBar x:Name="PostureBar" Height="4" Margin="0,0,0,9"/>
+                                <ItemsControl x:Name="PostureLines">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Height="17">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="12"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Ellipse Grid.Column="0" Width="5" Height="5" HorizontalAlignment="Left"
+                                                         Fill="{Binding Tone, Converter={StaticResource HealthBrush}}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="{StaticResource T.Caption}"
+                                                           Foreground="{StaticResource B.TextSecondary}" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Value}" FontSize="{StaticResource T.Caption}"
+                                                           FontFamily="{StaticResource F.Mono}" Foreground="{StaticResource B.TextPrimary}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Workspace host -->
+                <Grid Grid.Column="1" Background="{StaticResource B.Base}">
+                    <ContentControl x:Name="Host" Focusable="False"/>
+                </Grid>
+            </Grid>
+
+            <!-- ================= Status bar ================= -->
+            <Border Grid.Row="2" Background="{StaticResource B.Rail}" BorderBrush="{StaticResource B.Hairline}"
+                    BorderThickness="0,1,0,0">
+                <Grid Margin="14,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="StatusWorkspace" FontSize="{StaticResource T.Caption}"
+                                   Foreground="{StaticResource B.TextSecondary}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="StatusEvidence" FontSize="{StaticResource T.Caption}"
+                                   Foreground="{StaticResource B.TextTertiary}" Margin="0,0,16,0"/>
+                        <TextBlock x:Name="StatusRender" FontSize="{StaticResource T.Caption}"
+                                   FontFamily="{StaticResource F.Mono}" Foreground="{StaticResource B.TextTertiary}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

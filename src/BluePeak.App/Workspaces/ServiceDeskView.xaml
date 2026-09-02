@@ -1,0 +1,321 @@
+<UserControl x:Class="BluePeak.App.Workspaces.ServiceDeskView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:BluePeak.App.Controls"
+             Background="{StaticResource B.Base}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource Workspace.CommandBar}">
+            <Grid Margin="18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Service Desk" Style="{StaticResource Text.Title}"/>
+                <StackPanel Grid.Column="2" x:Name="CounterStrip" Orientation="Horizontal" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="336" MinWidth="280"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MinWidth="420"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="340" MinWidth="280"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Style="{StaticResource Column.Header}">
+                    <Grid Margin="14,0,12,0">
+                        <TextBlock Text="Intake queue" Style="{StaticResource ColumnHeader}"/>
+                        <TextBlock Text="Waiting" Style="{StaticResource ColumnHeader}" HorizontalAlignment="Right"/>
+                    </Grid>
+                </Border>
+                <ListBox Grid.Row="1" x:Name="QueueList" Style="{StaticResource List}"
+                         SelectionChanged="Queue_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="58" Margin="14,0,12,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0" Width="2" HorizontalAlignment="Left"
+                                           Fill="{Binding Priority, Converter={StaticResource SeverityBrush}}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="11,0,8,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Id}" Style="{StaticResource Cell.Id}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                        <TextBlock Text="{Binding Channel}" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                   Style="{StaticResource Text.Tertiary}"/>
+                                        <TextBlock Text="{Binding State, Converter={StaticResource EnumLabel}}"
+                                                   Margin="8,0,0,0" VerticalAlignment="Center"
+                                                   Style="{StaticResource Text.Tertiary}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Subject}" Style="{StaticResource Cell.Primary}"
+                                               FontSize="{StaticResource T.Caption}" Margin="0,4,0,0"/>
+                                    <TextBlock Text="{Binding Requester}" Style="{StaticResource Text.Tertiary}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="{Binding OpenedAt, Converter={StaticResource Ago}}"
+                                           VerticalAlignment="Center" Style="{StaticResource Text.Mono}"
+                                           FontSize="{StaticResource T.Caption}"
+                                           Foreground="{StaticResource B.TextSecondary}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+            <!-- Triage decision -->
+            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Background="{StaticResource B.Canvas}" BorderBrush="{StaticResource B.Hairline}"
+                            BorderThickness="0,0,0,1" Padding="20,15">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,7">
+                                <TextBlock x:Name="ContactId" Style="{StaticResource Text.Mono}"
+                                           Foreground="{StaticResource B.TextSecondary}"/>
+                                <TextBlock x:Name="ContactMeta" Margin="12,0,0,0" Style="{StaticResource Text.Tertiary}"/>
+                            </StackPanel>
+                            <TextBlock x:Name="ContactSubject" Style="{StaticResource Text.Display}" FontSize="18"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock x:Name="ContactSummary" Style="{StaticResource Text.Prose}" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Section.Bar}">
+                        <TextBlock Text="Does this already have a cause?" Style="{StaticResource Text.Section}"
+                                   Margin="20,0"/>
+                    </Border>
+
+                    <!-- The decision, stated with its reasons -->
+                    <Border x:Name="DecisionBorder" BorderThickness="2,0,0,0" Margin="20,16,20,0" Padding="16,2,0,2">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="DecisionHeadline" Style="{StaticResource Text.Title}"/>
+                                <Border x:Name="ConfidenceChip" Style="{StaticResource Chip}" Margin="12,0,0,0">
+                                    <TextBlock x:Name="ConfidenceText" Style="{StaticResource Chip.Text}"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock x:Name="DecisionDetail" Style="{StaticResource Text.Prose}" Margin="0,7,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ItemsControl x:Name="ReasonList" Margin="20,14,20,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="18"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Path Grid.Column="0" Width="11" Height="11" Stretch="Uniform"
+                                          VerticalAlignment="Top" Margin="0,2,0,0"
+                                          Data="{Binding GlyphData}" Stroke="{Binding GlyphBrush}"
+                                          StrokeThickness="1.4" Fill="Transparent"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Label}" Style="{StaticResource Field.Label}"
+                                               Margin="0,0,12,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Detail}" Style="{StaticResource Field.Value}"
+                                               FontSize="{StaticResource T.Caption}"
+                                               Foreground="{StaticResource B.TextSecondary}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" Margin="20,10,20,18">
+                        <Button x:Name="AttachButton" Style="{StaticResource Button.Primary}" Height="30"
+                                Padding="18,0" Click="Attach_Click"/>
+                        <Border x:Name="AttachedNotice" Style="{StaticResource Chip}" Height="30" Padding="14,0"
+                                Visibility="Collapsed" Background="#223FB98A" BorderBrush="#553FB98A">
+                            <TextBlock x:Name="AttachedText" Style="{StaticResource Chip.Text}"
+                                       Foreground="{StaticResource B.Healthy}"/>
+                        </Border>
+                        <Button x:Name="NewFaultButton" Content="Treat as a new fault"
+                                Style="{StaticResource Button.Standard}" Height="30" Padding="16,0"
+                                Margin="10,0,0,0" Click="NewFault_Click"/>
+                        <Button x:Name="OpenIncidentButton" Content="Open the incident"
+                                Style="{StaticResource Button.Standard}" Height="30" Padding="14,0"
+                                Margin="10,0,0,0" Click="OpenIncident_Click"/>
+                    </StackPanel>
+
+                    <Border Style="{StaticResource Section.Bar}">
+                        <Grid Margin="20,0">
+                            <TextBlock Text="Recent contacts on the same service" Style="{StaticResource Text.Section}"/>
+                            <TextBlock x:Name="SimilarSummary" Style="{StaticResource Text.Tertiary}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl x:Name="SimilarList" Margin="0,4,0,16">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="Transparent" Cursor="Hand" MouseLeftButtonUp="Similar_Click"
+                                        Tag="{Binding Id}">
+                                    <Grid Height="34" Margin="20,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="86"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Id}" Style="{StaticResource Cell.Id}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Subject}"
+                                                   Style="{StaticResource Cell.Secondary}" VerticalAlignment="Center"
+                                                   Margin="0,0,12,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding State, Converter={StaticResource EnumLabel}}"
+                                                   Style="{StaticResource Text.Tertiary}" VerticalAlignment="Center"
+                                                   Margin="0,0,12,0"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding OpenedAt, Converter={StaticResource Ago}}"
+                                                   Style="{StaticResource Text.Mono}" FontSize="{StaticResource T.Caption}"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource B.TextTertiary}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Border Style="{StaticResource Section.Bar}">
+                        <Grid Margin="20,0">
+                            <TextBlock Text="Contact history" Style="{StaticResource Text.Section}"/>
+                            <TextBlock x:Name="HistorySummary" Style="{StaticResource Text.Tertiary}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl x:Name="HistoryList" Margin="0,10,0,14">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="20,0,20,0" MinHeight="34">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="62"/>
+                                        <ColumnDefinition Width="22"/>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding At, Converter={StaticResource Clock}}"
+                                               Style="{StaticResource Text.Mono}" FontSize="{StaticResource T.Caption}"
+                                               VerticalAlignment="Top" Margin="0,2,0,0"
+                                               Foreground="{StaticResource B.TextTertiary}"/>
+                                    <Grid Grid.Column="1">
+                                        <Rectangle Width="1" Fill="#FF232B35" HorizontalAlignment="Center"/>
+                                        <Ellipse Width="6" Height="6" HorizontalAlignment="Center" VerticalAlignment="Top"
+                                                 Margin="0,5,0,0"
+                                                 Fill="{Binding Weight, Converter={StaticResource SeverityBrush}}"/>
+                                    </Grid>
+                                    <TextBlock Grid.Column="2" Text="{Binding Actor}" Margin="10,0,10,0"
+                                               VerticalAlignment="Top" Style="{StaticResource Cell.Secondary}"
+                                               FontWeight="Medium"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding Text}" Margin="0,0,0,10"
+                                               Style="{StaticResource Text.Prose}"
+                                               FontSize="{StaticResource T.Caption}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- The cost of getting triage wrong, stated so it is not abstract -->
+                    <Border Margin="20,4,20,24" BorderBrush="{StaticResource B.Hairline}" BorderThickness="1"
+                            CornerRadius="2" Background="{StaticResource B.Canvas}" Padding="16,13">
+                        <StackPanel>
+                            <TextBlock Text="What this decision costs" Style="{StaticResource Text.Section}"
+                                       Margin="0,0,0,9"/>
+                            <ItemsControl x:Name="CostList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="188"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                       Style="{StaticResource Field.Label}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                       Style="{StaticResource Field.Value}"
+                                                       FontSize="{StaticResource T.Caption}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <GridSplitter Grid.Column="3" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+            <Border Grid.Column="4" Style="{StaticResource Inspector}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16,14,10,18">
+                    <StackPanel>
+                        <TextBlock Text="Classification" Style="{StaticResource Text.Section}" Margin="0,0,0,8"/>
+                        <ItemsControl x:Name="ClassificationList" Margin="0,0,0,16">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="96"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                   Style="{StaticResource Field.Label}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                   Style="{StaticResource Field.Value}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="What to tell the requester" Style="{StaticResource Text.Section}"
+                                   Margin="0,0,0,8"/>
+                        <Border Background="{StaticResource B.Canvas}" BorderBrush="{StaticResource B.Hairline}"
+                                BorderThickness="1" CornerRadius="2" Padding="12,10" Margin="0,0,0,10">
+                            <TextBlock x:Name="RequesterUpdate" Style="{StaticResource Text.Prose}"
+                                       Foreground="{StaticResource B.TextPrimary}"
+                                       FontSize="{StaticResource T.Caption}"/>
+                        </Border>
+                        <TextBlock x:Name="HonestyNote" Style="{StaticResource Text.Prose}"
+                                   FontSize="{StaticResource T.Caption}" Margin="0,0,0,16"
+                                   Foreground="{StaticResource B.TextTertiary}"/>
+
+                        <TextBlock Text="Requester" Style="{StaticResource Text.Section}" Margin="0,0,0,8"/>
+                        <ItemsControl x:Name="RequesterList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="96"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Label}"
+                                                   Style="{StaticResource Field.Label}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                   Style="{StaticResource Field.Value}"
+                                                   FontSize="{StaticResource T.Caption}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
