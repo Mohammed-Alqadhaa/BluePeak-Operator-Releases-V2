@@ -81,9 +81,17 @@ try {
     tar -xf $tar -C $staging
     Remove-Item $tar -Force
 
-    $leaked = Get-ChildItem $staging -Recurse -Force |
-        Where-Object { $_.FullName -match '\\(bin|obj|\.git|\.vs|TestResults|artifacts|dist)\\' }
-    if ($leaked) { throw "source archive would contain build output: $($leaked[0].FullName)" }
+    # Compare paths relative to the staging root: the staging directory itself sits under
+    # artifacts/, so matching against full paths would flag every file.
+    $stagingPrefix = (Resolve-Path $staging).Path.TrimEnd('\') + '\'
+    $leaked = Get-ChildItem $staging -Recurse -Force | ForEach-Object {
+        $relative = $_.FullName.Substring($stagingPrefix.Length)
+        if ($relative -match '(^|\\)(bin|obj|\.vs|\.idea|TestResults|artifacts|dist)(\\|$)' -or
+            $relative -match '(^|\\)\.git(\\|$)' -or
+            $relative -match '\.(user|suo|trx|pdb)$') { $relative }
+    }
+    if ($leaked) { throw "source archive would contain build output: $($leaked[0])" }
+    Write-Host "source tree staged clean: $((Get-ChildItem $staging -Recurse -File).Count) files" -ForegroundColor Green
 
     Compress-Archive -Path (Join-Path $staging '*') -DestinationPath (Join-Path $dist 'BluePeak-Operator-Source.zip') -CompressionLevel Optimal
     Remove-Item -Recurse -Force $staging
