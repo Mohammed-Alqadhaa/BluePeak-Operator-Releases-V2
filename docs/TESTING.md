@@ -10,7 +10,7 @@ Test result files are written to `artifacts/engine-tests.trx` and `artifacts/ui-
 
 ## Coverage
 
-**120 tests. 96 engine, 24 user interface. All passing.**
+**124 tests. 96 engine, 28 user interface. All passing.**
 
 ### Simulation engine — `tests/BluePeak.Tests/TimelineTests.cs`
 
@@ -85,7 +85,8 @@ dictionaries merged, so views are exercised exactly as they are at runtime.
 | Assertion | Why it matters |
 |---|---|
 | Every one of the 13 workspaces constructs without a markup failure | Catches a broken binding or missing resource |
-| Every workspace lays out at the shipped window size (1342×838) | Catches a collapsed or zero-sized region |
+| Every workspace fills its region at three sizes — shipped default, the guaranteed minimum, and a large display | Catches a collapsed or zero-sized region |
+| **No Grid's arranged columns exceed the Grid itself at the minimum window size** | The precise clipping signal. `DesiredSize` is clamped to its constraint and so can never report overflow; measuring unconstrained only reports how wide prose would like to be. This is how the clipped SOC inspector was found. |
 | Views are created once and reused across navigation | State survives navigation |
 | Navigating the whole rail three times over is stable | |
 | Back navigation returns to the previous workspace | |

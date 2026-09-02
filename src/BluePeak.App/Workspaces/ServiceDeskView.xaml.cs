@@ -111,11 +111,19 @@ public partial class ServiceDeskView : UserControl, IFocusAware
         ContactSummary.Text = ticket.Summary;
 
         bool attach = assessment.Match is not null;
-        var tone = attach ? Theme.Degraded : Theme.Healthy;
+        bool settled = ticket.LinkedIncidentId is not null;
+
+        // Once the decision is made, the panel becomes a record of it rather than an instruction.
+        var tone = settled ? Theme.Healthy : attach ? Theme.Degraded : Theme.Healthy;
         DecisionBorder.BorderBrush = tone;
-        DecisionHeadline.Text = assessment.Recommendation;
+        DecisionHeadline.Text = settled
+            ? $"Correctly attached to {ticket.LinkedIncidentId}"
+            : assessment.Recommendation;
         DecisionHeadline.Foreground = tone;
-        DecisionDetail.Text = assessment.RecommendationDetail;
+        DecisionDetail.Text = settled
+            ? "This contact is impact evidence for an incident that already has a commander. It inherits that "
+              + "incident's update cadence and is not diagnosed again. The reasons below are why it was matched."
+            : assessment.RecommendationDetail;
 
         ConfidenceText.Text = attach ? $"{assessment.Confidence}% MATCH" : "NO MATCH";
         ConfidenceText.Foreground = tone;

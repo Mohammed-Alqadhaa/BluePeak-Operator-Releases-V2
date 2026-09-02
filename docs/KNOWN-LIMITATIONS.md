@@ -67,6 +67,8 @@ rather than hidden, and the ambient motion toggles in Settings reduce load.
 Windows 11. The stacks fall back to Segoe UI and Consolas, which shifts metrics slightly but
 breaks no layout.
 
+**Minimum window size is 1380 × 760.** A five-column investigation workbench needs the width; below it the rightmost inspector would clip. The minimum is enforced by the window and asserted by a layout test rather than left to be discovered.
+
 **DPI.** Per-monitor v2 aware and verified at 96 dpi. Higher scaling factors lay out correctly but
 have not been reviewed capture-by-capture at every scale.
 
