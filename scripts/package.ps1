@@ -108,7 +108,7 @@ try {
         if (-not (Test-Path $scExe)) { throw 'BluePeak.Operator.exe missing from the Windows archive' }
         $shots = Join-Path $verify 'windows-x64-captures'
         New-Item -ItemType Directory -Force -Path $shots | Out-Null
-        & $scExe --capture $shots --capture-exit | Out-Null
+        Start-Process -FilePath $scExe -ArgumentList '--capture', $shots, '--capture-exit' -Wait -NoNewWindow
         $n = @(Get-ChildItem $shots -Filter *.png -ErrorAction SilentlyContinue).Count
         Write-Host "self-contained package rendered $n surfaces from a fresh extraction" -ForegroundColor Green
         if ($n -lt 17) { throw "self-contained package rendered $n surfaces, expected 17" }
@@ -119,7 +119,7 @@ try {
         $fdExe = Join-Path $fdOut 'BluePeak.Operator.exe'
         $fdShots = Join-Path $verify 'framework-dependent-captures'
         New-Item -ItemType Directory -Force -Path $fdShots | Out-Null
-        & $fdExe --capture $fdShots --capture-exit | Out-Null
+        Start-Process -FilePath $fdExe -ArgumentList '--capture', $fdShots, '--capture-exit' -Wait -NoNewWindow
         $m = @(Get-ChildItem $fdShots -Filter *.png -ErrorAction SilentlyContinue).Count
         Write-Host "framework-dependent package rendered $m surfaces from a fresh extraction" -ForegroundColor Green
         if ($m -lt 17) { throw "framework-dependent package rendered $m surfaces, expected 17" }

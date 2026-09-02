@@ -72,7 +72,7 @@ try {
         $exe = Join-Path $root "src\BluePeak.Appin\$Configuration
 et10.0-windows\BluePeak.Operator.exe"
         if (-not (Test-Path $exe)) { throw "executable not found at $exe" }
-        & $exe --capture $captures --capture-exit | Out-Null
+        Start-Process -FilePath $exe -ArgumentList '--capture', $captures, '--capture-exit' -Wait -NoNewWindow
         $written = @(Get-ChildItem -Path $captures -Filter *.png -ErrorAction SilentlyContinue)
         Write-Host "$($written.Count) captures written to docs/captures" -ForegroundColor Green
         if ($written.Count -lt 17) { throw "expected 17 design captures, got $($written.Count)" }

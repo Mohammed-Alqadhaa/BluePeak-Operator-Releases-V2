@@ -72,11 +72,18 @@ jobs:
       - name: Verify packaged startup renders every workspace
         shell: pwsh
         run: |
-          $exe = 'artifacts/publish/self-contained-x64/BluePeak.Operator.exe'
-          $out = 'artifacts/ci-captures'
+          $exe = Resolve-Path 'artifacts/publish/self-contained-x64/BluePeak.Operator.exe'
+          $out = Join-Path (Get-Location) 'artifacts/ci-captures'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
-          & $exe --capture $out --capture-exit
-          $count = (Get-ChildItem $out -Filter *.png).Count
+
+          # The app is a GUI-subsystem executable, so PowerShell's call operator returns as
+          # soon as it starts rather than when it exits. Start-Process -Wait is required, or
+          # the capture count runs before a single PNG has been written.
+          $proc = Start-Process -FilePath $exe -ArgumentList '--capture', $out, '--capture-exit' `
+                                -Wait -PassThru -NoNewWindow
+          Write-Host "packaged process exited with $($proc.ExitCode)"
+
+          $count = @(Get-ChildItem $out -Filter *.png -ErrorAction SilentlyContinue).Count
           Write-Host "packaged startup rendered $count surfaces"
           if ($count -lt 17) { throw "expected 17 rendered surfaces, got $count" }
 
